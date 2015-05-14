@@ -182,6 +182,7 @@ public class XAdESBESCoSignature extends GenericXMLSignature {
          * configuraciÃ³n del tipo de firma
          */
         DataToSign dataToSign = createDataToSign();
+        System.out.println(signedDocFilename);
 
         // Firmamos el documento
         try {

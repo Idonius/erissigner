@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 public class Signer {
@@ -30,8 +32,8 @@ public class Signer {
 		}
 		
 		if(args[0].equals("sign")){
-			Properties props = new Properties();
-			InputStream is = null;
+			//Properties props = new Properties();
+			//InputStream is = null;
 			if(args.length < 2){
 				System.exit(0);
 			}
@@ -46,20 +48,28 @@ public class Signer {
 			}
 			
 			try{
-				is = new FileInputStream("config.properties");
-				props.load(is);
-				String unsignedDocsFolder = props.getProperty("unsigned_docs_folder");
-				String signedDocsFolder = props.getProperty("signed_docs_folder");
-				String signFilename = props.getProperty("sign_filename");
+				//is = new FileInputStream("config.properties");
+				//props.load(is);
+				//String unsignedDocsFolder = props.getProperty("unsigned_docs_folder");
+				//String signedDocsFolder = props.getProperty("signed_docs_folder");
+				String signedDocsFolder = args[3];
+				//String signFilename = props.getProperty("sign_filename");
+				String signFilename = args[4];
 				//Password del archivo
-				String password = DesEncrypt.decrypt(props.getProperty("sign_password"));
+				//String password = DesEncrypt.decrypt(args[5]);
+				String password = args[5];
 				System.out.println("Firmando el archivo: " + docfilename);
-				System.out.println("Ubicado en: " + props.getProperty("unsigned_docs_folder"));
-				File docFile = new File(new File(unsignedDocsFolder), docfilename);
+				System.out.println("clave: " + password);
+				//System.out.println("Ubicado en: " + props.getProperty("unsigned_docs_folder"));
+				//File docFile = new File(new File(unsignedDocsFolder), docfilename);
+				File docFile = new File(docfilename);
 				System.out.println(docFile.getPath());
 				
+				Path p = Paths.get(docfilename);
+				String dfilename = p.getFileName().toString();
+				
 				XAdESBESCoSignature signer = new XAdESBESCoSignature(docFile.getPath()
-						, docfilename
+						, dfilename
 						, signedDocsFolder
 						, signFilename
 						, password
@@ -69,9 +79,10 @@ public class Signer {
 						);
 				signer.execute();
 				docFile.delete();
-			}catch(IOException ioex){
+			}catch(Exception ioex){
 				ioex.printStackTrace();
 			}finally{
+				/*
 				if(is!=null){
 					try{
 						is.close();
@@ -79,6 +90,7 @@ public class Signer {
 						ex.printStackTrace();
 					}
 				}
+				*/
 			}
 		}
 
